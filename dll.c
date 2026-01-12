@@ -1,213 +1,148 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include<stdio.h>
+#include<stdlib.h>
 
-struct node
-{
-    char ssn[20], name[20], dept[20];
-    struct node *llink;
-    struct node *rlink;
+struct node{
+  char EMPNO[10], Name[20], Dept[10];
+  struct node *llink;
+  struct node *rlink;
 };
 
-typedef struct node* NODE;
+typedef struct node *NODE;
 
-NODE first = NULL;
-int count = 0;
-
-/* Create Node */
-NODE create()
-{
-    NODE temp = (NODE)malloc(sizeof(struct node));
-    if (temp == NULL)
-    {
-        printf("Memory allocation failed\n");
-        exit(0);
-    }
-
-    printf("Enter SSN Name Department:\n");
-    scanf("%s %s %s", temp->ssn, temp->name, temp->dept);
-
-    temp->llink = NULL;
-    temp->rlink = NULL;
-    count++;
-    return temp;
+NODE getnode(){
+  return ((struct node*) malloc(sizeof(struct node)));
 }
 
-/* Insert at End */
-NODE insertend()
-{
-    NODE cur, temp = create();
-
-    if (first == NULL)
-        return temp;
-
-    cur = first;
-    while (cur->rlink != NULL)
-        cur = cur->rlink;
-
-    cur->rlink = temp;
-    temp->llink = cur;
-    return first;
+NODE insert_front(NODE first){
+   NODE temp;
+   temp = getnode();
+   printf("\nEnter Employee Details (EMPNO Name Dept): ");
+   scanf("%s%s%s", temp->EMPNO, temp->Name, temp->Dept);  // Fixed: removed & for arrays
+   
+   if(first == NULL){
+      temp->llink = NULL;
+      temp->rlink = NULL;
+      return temp;
+   }
+   else{
+      first->llink = temp;
+      temp->rlink = first;
+      temp->llink = NULL;
+      return temp;
+   }
 }
 
-/* Insert at Front */
-NODE insertfront()
-{
-    NODE temp = create();
-
-    if (first == NULL)
-        return temp;
-
-    temp->rlink = first;
-    first->llink = temp;
-    return temp;
+NODE insert_rear(NODE first){
+   NODE temp, cur;
+   temp = getnode();
+   printf("\nEnter Employee Details (EMPNO Name Dept): ");
+   scanf("%s%s%s", temp->EMPNO, temp->Name, temp->Dept);  // Fixed: removed & for arrays
+   
+   if(first == NULL){
+      temp->llink = NULL;
+      temp->rlink = NULL;
+      return temp;
+   }
+   else{
+      cur = first;
+      while(cur->rlink != NULL){
+         cur = cur->rlink;
+      }
+      cur->rlink = temp;
+      temp->llink = cur;
+      temp->rlink = NULL;
+      return first;
+   }
 }
 
-/* Delete at End */
-NODE deleteend()
-{
-    NODE cur, prev = NULL;
-
-    if (first == NULL)
-    {
-        printf("DLL is empty\n");
-        return NULL;
-    }
-
-    if (first->rlink == NULL)
-    {
-        printf("Deleted SSN: %s\n", first->ssn);
-        free(first);
-        count--;
-        return NULL;
-    }
-
-    cur = first;
-    while (cur->rlink != NULL)
-    {
-        prev = cur;
-        cur = cur->rlink;
-    }
-
-    prev->rlink = NULL;
-    printf("Deleted SSN: %s\n", cur->ssn);
-    free(cur);
-    count--;
-    return first;
+NODE delete_front(NODE first){
+   NODE cur;
+   if(first == NULL){
+      printf("\nThe DLL is Empty\n");
+      return NULL;
+   }
+   if(first->rlink == NULL){
+      printf("\nThe %s Employee Node is Deleted\n", first->EMPNO);
+      free(first);
+      return NULL;
+   }
+   cur = first;
+   first = cur->rlink;
+   first->llink = NULL;  // Fixed: set new first's llink to NULL
+   printf("\nThe %s Employee Node is Deleted\n", cur->EMPNO);
+   free(cur);
+   return first;
 }
 
-/* Delete at Front */
-NODE deletefront()
-{
-    NODE temp;
-
-    if (first == NULL)
-    {
-        printf("DLL is empty\n");
-        return NULL;
-    }
-
-    if (first->rlink == NULL)
-    {
-        printf("Deleted SSN: %s\n", first->ssn);
-        free(first);
-        count--;
-        return NULL;
-    }
-
-    temp = first;
-    first = first->rlink;
-    first->llink = NULL;
-
-    printf("Deleted SSN: %s\n", temp->ssn);
-    free(temp);
-    count--;
-    return first;
+NODE delete_rear(NODE first){
+   NODE cur, prev;
+   if(first == NULL){
+      printf("\nThe DLL is Empty\n");
+      return NULL;
+   }
+   if(first->rlink == NULL){
+      printf("\nThe %s Employee Node is Deleted\n", first->EMPNO);
+      free(first);
+      return NULL;
+   }
+   cur = first;
+   prev = NULL;
+   while(cur->rlink != NULL){
+      prev = cur;
+      cur = cur->rlink;
+   }
+   prev->rlink = NULL;
+   printf("\nThe %s Employee Node is Deleted\n", cur->EMPNO);
+   free(cur);
+   return first;
 }
 
-/* Display and Count */
-void display()
-{
-    NODE cur = first;
-
-    if (cur == NULL)
-    {
-        printf("DLL is empty\n");
-        return;
-    }
-
-    printf("\nEmployee Details:\n");
-    while (cur != NULL)
-    {
-        printf("SSN:%s  Name:%s  Dept:%s\n",
-               cur->ssn, cur->name, cur->dept);
-        cur = cur->rlink;
-    }
-    printf("Number of nodes = %d\n", count);
+void display(NODE first){
+   NODE cur;
+   int count = 0;
+   if(first == NULL){
+      printf("\nThe DLL is Empty\n");
+      return;
+   }
+   cur = first;
+   printf("\n===== Employee Details =====\n");
+   while(cur != NULL){
+      printf("EMPNO:  %s | Name: %s | Dept:  %s\n", cur->EMPNO, cur->Name, cur->Dept);
+      count++;
+      cur = cur->rlink;
+   }
+   printf("\nTotal number of nodes in DLL: %d\n", count);
 }
 
-/* DEQUE Demonstration */
-void deqdemo()
-{
-    int ch;
-    while (1)
-    {
-        printf("\nDEQUE using DLL");
-        printf("\n1.Insert Front");
-        printf("\n2.Delete Front");
-        printf("\n3.Insert End");
-        printf("\n4.Delete End");
-        printf("\n5.Display");
-        printf("\n6.Exit\n");
-        scanf("%d", &ch);
-
-        switch (ch)
-        {
-            case 1: first = insertfront(); break;
-            case 2: first = deletefront(); break;
-            case 3: first = insertend();   break;
-            case 4: first = deleteend();   break;
-            case 5: display();             break;
-            default: return;
-        }
-    }
-}
-
-/* Main */
-int main()
-{
-    int ch, n, i;
-
-    while (1)
-    {
-        printf("\n\n--- DLL MENU ---");
-        printf("\n1.Create DLL (End Insertion)");
-        printf("\n2.Display & Count");
-        printf("\n3.Insert at End");
-        printf("\n4.Delete at End");
-        printf("\n5.Insert at Front");
-        printf("\n6.Delete at Front");
-        printf("\n7.DEQUE Demo");
-        printf("\n8.Exit\n");
-        printf("Enter choice: ");
-        scanf("%d", &ch);
-
-        switch (ch)
-        {
-            case 1:
-                printf("Enter number of employees: ");
-                scanf("%d", &n);
-                for (i = 0; i < n; i++)
-                    first = insertend();
-                break;
-
-            case 2: display(); break;
-            case 3: first = insertend(); break;
-            case 4: first = deleteend(); break;
-            case 5: first = insertfront(); break;
-            case 6: first = deletefront(); break;
-            case 7: deqdemo(); break;
-            case 8: exit(0);
-            default: printf("Invalid choice\n");
-        }
-    }
+int main(){
+   NODE first = NULL;
+   int ch;
+   
+   while(1){
+      printf("\n************** DLL **************\n");
+      printf("1. Insert Front\n");
+      printf("2. Insert Rear\n");
+      printf("3. Delete Front\n");
+      printf("4. Delete Rear\n");
+      printf("5. Display\n");
+      printf("6. Exit\n");
+      printf("Enter your choice: ");
+      scanf("%d", &ch);
+      
+      switch(ch){
+         case 1: first = insert_front(first);
+                 break;
+         case 2: first = insert_rear(first);
+                 break;
+         case 3: first = delete_front(first);
+                 break;
+         case 4: first = delete_rear(first);
+                 break;
+         case 5: display(first);
+                 break;
+         case 6: exit(0);
+         default: printf("\nWrong Choice!!\n");
+      }
+   }
+   return 0;
 }
